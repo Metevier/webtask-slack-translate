@@ -1,7 +1,7 @@
 'use strict';
 
 var translate = function() {
-  return "Hello";
+  return 'Hello';
 };
 
 var webtask = function (context, cb) { 
