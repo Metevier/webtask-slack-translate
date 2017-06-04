@@ -1,0 +1,26 @@
+{
+  "name": "webtask-slack-translate",
+  "version": "1.0.0",
+  "description": "Webtask Slack Integration using the Google Translate API",
+  "main": "translate.js",
+  "scripts": {
+    "build": "rollup src/webtask.js --format cjs --output dist/webtask.js",
+    "create": "npm run build && wt create --name translate --secrets-file .env dist/webtask.js",
+    "deploy": "npm run build && wt update translate dist/webtask.js",
+    "test": "mocha"
+  },
+  "keywords": [
+    "webtask",
+    "slack",
+    "translate"
+  ],
+  "author": "Tyler Metevier",
+  "license": "MIT",
+  "devDependencies": {
+    "babel-preset-es2015": "^6.24.1",
+    "babel-register": "^6.24.1",
+    "chai": "^4.0.1",
+    "mocha": "^3.4.2",
+    "rollup": "^0.42.0"
+  }
+}
