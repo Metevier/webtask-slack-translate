@@ -1,5 +1,5 @@
 import { expect } from 'chai';
-import translate, { HELP_MESSAGES, INVALID_FORMAT, INVALID_KEY } from '../src/translate';
+import translate, { HELP_MESSAGES, INVALID_FORMAT, INVALID_KEY } from '../../src/translate';
 
 describe('translate()', () => {
   const key = 'supersecretkey';

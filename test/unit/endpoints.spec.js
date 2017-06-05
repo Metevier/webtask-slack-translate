@@ -1,5 +1,5 @@
 import { expect } from 'chai';
-import endpoints from '../src/endpoints';
+import endpoints from '../../src/endpoints';
 
 describe('endpoints', () => {
   const key = 'supersecretkey';
