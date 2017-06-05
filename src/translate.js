@@ -1,6 +1,6 @@
 const INVALID_FORMAT = 'INVALID_FORMAT';
 const HELP_MESSAGES  = {
-  'INVALID_FORMAT': 'Please your command in the following format:\n [target-language] [translation-text]'
+  'INVALID_FORMAT': 'Please enter your command in the following format:\n [target-language] [translation-text]'
 };
 
 const getHelpText = (messageKey) => {

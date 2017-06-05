@@ -10,7 +10,7 @@ A translation webtask for use with Webtask's Slack Integration
 /wt create translate
 `
 * Navigate to the returned edit link in slack, and replace the generated code with the code in dist/webtask.js and hit save
-* Click the wrench icon -> secrets, and add you Google Translate API key as API\_KEY and the Google Translate path as API\_PATH (it will default to https://translation.googleapis.com/language/translate/v2)
+* Click the wrench icon -> secrets, and add you Google Translate API key as API\_KEY
 
 You can now translate text in slack! Use the following format:
 
@@ -22,7 +22,7 @@ Example:
 
 # Development
 
-Copy .env.example to .env, and populate API\_KEY and API\_PATH
+Copy .env.example to .env, and populate API\_KEY
 
 ## Create
 `npm run create`
