@@ -9,7 +9,8 @@ A translation webtask for use with Webtask's Slack Integration
 `
 /wt create translate
 `
-* Navigate to the returned edit link in slack, and replace the generated code with the code in dist/webtask.js and hit save
+* In the generated message click "Edit in Webtask Editor"
+* On the webpage, replace the generated code with the code in dist/webtask.js and hit save
 * Click the wrench icon -> secrets, and add you Google Translate API key as API\_KEY
 
 You can now translate text in slack! Use the following format:
