@@ -2,7 +2,7 @@ import endpoints from './endpoints';
 
 export const INVALID_FORMAT = 'INVALID_FORMAT', INVALID_KEY = 'INVALID_KEY';
 export const HELP_MESSAGES  = {
-  [INVALID_FORMAT]: 'Please enter your command in the following format:\n [target-language] [translation-text]',
+  [INVALID_FORMAT]: 'Please enter your command in the following format:\n [target-language] [translation-text]\n Type lang to see a list of available languages',
   [INVALID_KEY]:    'Invalid Google API Key'
 };
 
@@ -54,10 +54,12 @@ export default function (source, apiKey, done) {
   if(invalidFormat) 
     return done(getHelpText(INVALID_FORMAT));
 
-  return done({
-    isEphemeral,
-    langKey,
-    sourceText,
-    translationText
+  return getTranslation(langKey, sourceText, (translation) => {
+    return done({
+      isEphemeral,
+      langKey,
+      sourceText,
+      translationText: translation
+    });
   });
 }

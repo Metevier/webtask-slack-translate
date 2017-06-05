@@ -118,6 +118,15 @@ var translate = function (source, apiKey, done) {
 
   if (invalidFormat) return done(getHelpText(INVALID_FORMAT));
 
+  return getTranslation(langKey, sourceText, function (translation) {
+    return done({
+      isEphemeral: isEphemeral,
+      langKey: langKey,
+      sourceText: sourceText,
+      translationText: translation
+    });
+  });
+
   return done({
     isEphemeral: isEphemeral,
     langKey: langKey,
@@ -127,7 +136,7 @@ var translate = function (source, apiKey, done) {
 };
 
 var webtask = function (context, cb) {
-  translate(context.body.text, context.secrects.API_KEY, function (_ref) {
+  translate(context.body.text, context.secrets.API_KEY, function (_ref) {
     var translationText = _ref.translationText,
         isEphemeral = _ref.isEphemeral;
 

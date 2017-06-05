@@ -43,6 +43,14 @@ describe('translate()', () => {
       done();
     });
   });
+
+  it('Should return translation text and a non ephemeral message', (done) => {
+    translate('fr Hello world', key, ({ langKey, sourceText, isEphemeral, translationText }) => {
+      expect(isEphemeral).to.be.false;
+      expect(translationText).to.be.a('string');
+      done();
+    });
+  });
 });
 
 //Example JSON results pulled from the Translation API
