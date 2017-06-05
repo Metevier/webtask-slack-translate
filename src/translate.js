@@ -1,9 +1,11 @@
 import endpoints from './endpoints';
 
-export const INVALID_FORMAT = 'INVALID_FORMAT', INVALID_KEY = 'INVALID_KEY';
+export const INVALID_FORMAT = 'INVALID_FORMAT', INVALID_KEY = 'INVALID_KEY', INVALID_LANG = 'INVALID_LANG', GENERAL_ERROR = 'GENERAL_ERROR';
 export const HELP_MESSAGES  = {
-  [INVALID_FORMAT]: 'Please enter your command in the following format:\n [target-language] [translation-text]\n Type lang to see a list of available languages',
-  [INVALID_KEY]:    'Invalid Google API Key'
+  [INVALID_FORMAT] : 'Please enter your command in the following format:\n [target-language] [translation-text]\n Type lang to see a list of available languages',
+  [INVALID_KEY]    : 'Invalid Google API Key.',
+  [INVALID_LANG]   : 'Invalid target language.\n Type lang to see a list of available languages',
+  [GENERAL_ERROR]  : 'Something went wrong!'
 };
 
 const getHelpText = (messageKey) => {
@@ -43,7 +45,10 @@ export default function (source, apiKey, done) {
   const { langKey, sourceText, invalidFormat } = parseSource(source);
 
   if (langKey === 'lang') {
-    return getLanguages((languages) => {
+    return getLanguages((languages, errMessage) => {
+      if (errMessage) 
+        return done(getHelpText(errMessage));
+
       return done({
         translationText : languages,
         isEphemeral     : true
@@ -54,7 +59,10 @@ export default function (source, apiKey, done) {
   if(invalidFormat) 
     return done(getHelpText(INVALID_FORMAT));
 
-  return getTranslation(langKey, sourceText, (translation) => {
+  return getTranslation(langKey, sourceText, (translation, errMessage) => {
+    if (errMessage) 
+        return done(getHelpText(errMessage));
+
     return done({
       isEphemeral,
       langKey,

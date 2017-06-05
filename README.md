@@ -20,6 +20,10 @@ Example:
 
 `/wt translate fr This is some sample text.`
 
+To see a list of available languages:
+
+`/wt [translate-command] lang`
+
 # Development
 
 Copy .env.example to .env, and populate API\_KEY
@@ -32,3 +36,7 @@ Copy .env.example to .env, and populate API\_KEY
 
 ## Test
 `npm test`
+
+All Tests, Including Integration Tests against the Google Translate API
+
+`npm test:all`

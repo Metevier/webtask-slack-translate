@@ -6,6 +6,21 @@ var request = _interopDefault(require('request'));
 
 var baseEndpoint = 'https://translation.googleapis.com/language/translate/v2';
 
+var parseError = function parseError(body) {
+  if (body.error) {
+    var code = body.error.code;
+    switch (code) {
+      case 400:
+        return INVALID_LANG;
+      case 403:
+        return INVALID_KEY;
+      default:
+        return GENERAL_ERROR;
+    }
+  }
+  return null;
+};
+
 var endpoints = function (apiKey) {
   var languagesEndpoint = baseEndpoint + '/languages?key=' + apiKey;
   var translationEndpoint = baseEndpoint + '?key=' + apiKey;
@@ -13,11 +28,14 @@ var endpoints = function (apiKey) {
   var getLanguages = function getLanguages(done) {
     request.get(languagesEndpoint, function (err, res, body) {
       var parsedBody = JSON.parse(body);
+      var errMessage = parseError(parsedBody);
+      if (errMessage) return done(null, errMessage);
+
       var languages = parsedBody.data.languages.reduce(function (fullText, current) {
         return fullText === '' ? current.language : fullText + ' ' + current.language; //Don't want a leading space
       }, '');
 
-      done(languages);
+      done(languages, errMessage);
     });
   };
 
@@ -29,11 +47,14 @@ var endpoints = function (apiKey) {
       }
     }, function (err, res, body) {
       var parsedBody = JSON.parse(body);
+      var errMessage = parseError(parsedBody);
+      if (errMessage) return done(null, errMessage);
+
       var translatedText = parsedBody.data.translations.reduce(function (fullText, current) {
         return fullText === '' ? current.translatedText : fullText + '\n' + current.translatedText; //Don't want a leading \n
       }, '');
 
-      done(translatedText);
+      done(translatedText, errMessage);
     });
   };
 
@@ -64,7 +85,9 @@ var _HELP_MESSAGES;
 
 var INVALID_FORMAT = 'INVALID_FORMAT';
 var INVALID_KEY = 'INVALID_KEY';
-var HELP_MESSAGES = (_HELP_MESSAGES = {}, defineProperty(_HELP_MESSAGES, INVALID_FORMAT, 'Please enter your command in the following format:\n [target-language] [translation-text]'), defineProperty(_HELP_MESSAGES, INVALID_KEY, 'Invalid Google API Key'), _HELP_MESSAGES);
+var INVALID_LANG = 'INVALID_LANG';
+var GENERAL_ERROR = 'GENERAL_ERROR';
+var HELP_MESSAGES = (_HELP_MESSAGES = {}, defineProperty(_HELP_MESSAGES, INVALID_FORMAT, 'Please enter your command in the following format:\n [target-language] [translation-text]\n Type lang to see a list of available languages'), defineProperty(_HELP_MESSAGES, INVALID_KEY, 'Invalid Google API Key.'), defineProperty(_HELP_MESSAGES, INVALID_LANG, 'Invalid target language.\n Type lang to see a list of available languages'), defineProperty(_HELP_MESSAGES, GENERAL_ERROR, 'Something went wrong!'), _HELP_MESSAGES);
 
 var getHelpText = function getHelpText(messageKey) {
   return {
@@ -108,7 +131,9 @@ var translate = function (source, apiKey, done) {
       invalidFormat = _parseSource.invalidFormat;
 
   if (langKey === 'lang') {
-    return getLanguages(function (languages) {
+    return getLanguages(function (languages, errMessage) {
+      if (errMessage) return done(getHelpText(errMessage));
+
       return done({
         translationText: languages,
         isEphemeral: true
@@ -118,20 +143,15 @@ var translate = function (source, apiKey, done) {
 
   if (invalidFormat) return done(getHelpText(INVALID_FORMAT));
 
-  return getTranslation(langKey, sourceText, function (translation) {
+  return getTranslation(langKey, sourceText, function (translation, errMessage) {
+    if (errMessage) return done(getHelpText(errMessage));
+
     return done({
       isEphemeral: isEphemeral,
       langKey: langKey,
       sourceText: sourceText,
       translationText: translation
     });
-  });
-
-  return done({
-    isEphemeral: isEphemeral,
-    langKey: langKey,
-    sourceText: sourceText,
-    translationText: translationText
   });
 };
 
