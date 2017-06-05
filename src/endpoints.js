@@ -7,10 +7,10 @@ export default function (apiKey) {
   const translationEndpoint = `${baseEndpoint}?key=${apiKey}`;
 
   const getLanguages = (done) => {
-    request(languagesEndpoint, (err, res, body) => {
+    request.get(languagesEndpoint, (err, res, body) => {
       const parsedBody = JSON.parse(body);
       const languages  = parsedBody.data.languages.reduce((fullText, current) => {
-        return `${fullText} ${current.language}`;
+        return fullText === '' ? current.language : `${fullText} ${current.language}`; //Don't want a leading space
       }, '');
 
       done(languages);
@@ -28,7 +28,7 @@ export default function (apiKey) {
       (err, res, body) => {
         const parsedBody     = JSON.parse(body);
         const translatedText = parsedBody.data.translations.reduce((fullText, current) => {
-          return `${fullText}\n${current.translatedText}`;
+          return fullText === '' ? current.translatedText : `${fullText}\n${current.translatedText}`; //Don't want a leading \n
         }, '');
 
         done(translatedText);

@@ -38,12 +38,21 @@ export default function (source, apiKey, done) {
   if (!apiKey) 
     return done(getHelpText(INVALID_KEY));
 
+  const { getLanguages, getTranslation } = endpoints(apiKey);
+
   const { langKey, sourceText, invalidFormat } = parseSource(source);
+
+  if (langKey === 'lang') {
+    return getLanguages((languages) => {
+      return done({
+        translationText : languages,
+        isEphemeral     : true
+      });
+    });
+  }
 
   if(invalidFormat) 
     return done(getHelpText(INVALID_FORMAT));
-
-  const { getLanguages, getTranslation } = endpoints(apiKey);
 
   return done({
     isEphemeral,

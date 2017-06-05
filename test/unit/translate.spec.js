@@ -1,8 +1,12 @@
 import { expect } from 'chai';
+import sinon from 'sinon';
+import request from 'request';
 import translate, { HELP_MESSAGES, INVALID_FORMAT, INVALID_KEY } from '../../src/translate';
 
 describe('translate()', () => {
   const key = 'supersecretkey';
+
+  before(stubRequest);
 
   it('Should return a target language key and source text', (done) => {
     const expectedLangKey    = 'fr', 
@@ -31,4 +35,44 @@ describe('translate()', () => {
       done();
     });
   });
+
+  it('A language key of "lang" should return available languages', (done) => {
+    translate('lang', key, ({ langKey, sourceText, isEphemeral, translationText }) => {
+      expect(isEphemeral).to.be.true;
+      expect(translationText).to.equal('en fr');
+      done();
+    });
+  });
 });
+
+//Example JSON results pulled from the Translation API
+function stubRequest(done) {
+  sinon
+    .stub(request, 'get')
+    .yields(null, null, JSON.stringify({
+      "data": {
+        "languages": [
+          {
+            "language": "en"
+          },
+          {
+            "language": "fr"
+          }
+        ]
+      }
+    }));
+
+  sinon
+    .stub(request, 'post')
+    .yields(null, null, JSON.stringify({
+      "data": {
+        "translations": [
+          {
+            "translatedText": "Hallo Welt",
+            "detectedSourceLanguage": "en"
+          }
+        ]
+      }
+    }));
+  done();
+}
