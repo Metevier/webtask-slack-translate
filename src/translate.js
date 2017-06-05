@@ -1,10 +1,14 @@
-const INVALID_FORMAT = 'INVALID_FORMAT';
-const HELP_MESSAGES  = {
-  'INVALID_FORMAT': 'Please enter your command in the following format:\n [target-language] [translation-text]'
+export const INVALID_FORMAT = 'INVALID_FORMAT', INVALID_KEY = 'INVALID_KEY';
+export const HELP_MESSAGES  = {
+  [INVALID_FORMAT]: 'Please enter your command in the following format:\n [target-language] [translation-text]',
+  [INVALID_KEY]:    'Invalid Google API Key'
 };
 
 const getHelpText = (messageKey) => {
-  return HELP_MESSAGES[messageKey];
+  return {
+    translationText : HELP_MESSAGES[messageKey],
+    isEphemeral     : true
+  };
 }
 
 const parseSource = (source) => {
@@ -26,15 +30,16 @@ const parseSource = (source) => {
   }
 };
 
-export default function (source) {
+export default function (source, apiKey) {
   let isEphemeral = false, translationText = '';
+
+  if (!apiKey) 
+    return getHelpText(INVALID_KEY);
 
   const { langKey, sourceText, invalidFormat } = parseSource(source);
 
-  if(invalidFormat) {
-    translationText = getHelpText(INVALID_FORMAT);
-    isEphemeral     = true; 
-  }
+  if(invalidFormat) 
+    return getHelpText(INVALID_FORMAT);
 
   return {
     isEphemeral,

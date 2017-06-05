@@ -1,12 +1,31 @@
 'use strict';
 
-var INVALID_FORMAT = 'INVALID_FORMAT';
-var HELP_MESSAGES = {
-  'INVALID_FORMAT': 'Please your command in the following format:\n [target-language] [translation-text]'
+var defineProperty = function (obj, key, value) {
+  if (key in obj) {
+    Object.defineProperty(obj, key, {
+      value: value,
+      enumerable: true,
+      configurable: true,
+      writable: true
+    });
+  } else {
+    obj[key] = value;
+  }
+
+  return obj;
 };
 
+var _HELP_MESSAGES;
+
+var INVALID_FORMAT = 'INVALID_FORMAT';
+var INVALID_KEY = 'INVALID_KEY';
+var HELP_MESSAGES = (_HELP_MESSAGES = {}, defineProperty(_HELP_MESSAGES, INVALID_FORMAT, 'Please enter your command in the following format:\n [target-language] [translation-text]'), defineProperty(_HELP_MESSAGES, INVALID_KEY, 'Invalid Google API Key'), _HELP_MESSAGES);
+
 var getHelpText = function getHelpText(messageKey) {
-  return HELP_MESSAGES[messageKey];
+  return {
+    translationText: HELP_MESSAGES[messageKey],
+    isEphemeral: true
+  };
 };
 
 var parseSource = function parseSource(source) {
@@ -28,19 +47,18 @@ var parseSource = function parseSource(source) {
   };
 };
 
-var translate = function (source) {
+var translate = function (source, apiKey) {
   var isEphemeral = false,
       translationText = '';
+
+  if (!apiKey) return getHelpText(INVALID_KEY);
 
   var _parseSource = parseSource(source),
       langKey = _parseSource.langKey,
       sourceText = _parseSource.sourceText,
       invalidFormat = _parseSource.invalidFormat;
 
-  if (invalidFormat) {
-    translationText = getHelpText(INVALID_FORMAT);
-    isEphemeral = true;
-  }
+  if (invalidFormat) return getHelpText(INVALID_FORMAT);
 
   return {
     isEphemeral: isEphemeral,
