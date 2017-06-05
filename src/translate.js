@@ -1,3 +1,5 @@
+import endpoints from './endpoints';
+
 export const INVALID_FORMAT = 'INVALID_FORMAT', INVALID_KEY = 'INVALID_KEY';
 export const HELP_MESSAGES  = {
   [INVALID_FORMAT]: 'Please enter your command in the following format:\n [target-language] [translation-text]',
@@ -14,7 +16,7 @@ const getHelpText = (messageKey) => {
 const parseSource = (source) => {
   if (!source) {
     return { 
-      invalidFormat: true 
+      invalidFormat : true 
     };
   }
 
@@ -30,21 +32,23 @@ const parseSource = (source) => {
   }
 };
 
-export default function (source, apiKey) {
+export default function (source, apiKey, done) {
   let isEphemeral = false, translationText = '';
 
   if (!apiKey) 
-    return getHelpText(INVALID_KEY);
+    return done(getHelpText(INVALID_KEY));
 
   const { langKey, sourceText, invalidFormat } = parseSource(source);
 
   if(invalidFormat) 
-    return getHelpText(INVALID_FORMAT);
+    return done(getHelpText(INVALID_FORMAT));
 
-  return {
+  const { getLanguages, getTranslation } = endpoints(apiKey);
+
+  return done({
     isEphemeral,
     langKey,
     sourceText,
     translationText
-  };
+  });
 }
